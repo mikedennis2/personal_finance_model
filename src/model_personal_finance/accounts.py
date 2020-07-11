@@ -7,6 +7,7 @@ class InvestmentAccount:
         self.balance = init_balance
         self.yearly_contribution = contribution_yearly
         self.divident_yield = divident_yield
+        self.future_value_array = None 
 
 
     def compound_balance(self, duration_years, rate_percent):
@@ -20,19 +21,19 @@ class InvestmentAccount:
             rate_array_len = len(rate_percent)
             if rate_array_len != duration_years:
                 raise RuntimeError('Incorrect array size for the given duration')
-            rate_array = rate_percent
+            rate_array = rate_percent / 100
         except:
             rate_array = np.ones(duration_years) * rate_percent / 100
 
         # Compound the contributions over the duration, including the divident/distribution yield
-        future_value = np.zeros(rate_array.size)
-        future_value[0] = pv
+        future_value_array = np.zeros(rate_array.size)
+        future_value_array[0] = pv
         for i in range(1, duration_years):
-            additional_investment = future_value[i - 1] * self.divident_yield + self.yearly_contribution
-            value_for_compounding = future_value[i - 1] + additional_investment
-            future_value[i] = value_for_compounding * (1 + rate_array[i - 1])
-
-        return future_value
+            additional_investment = future_value_array[i - 1] * self.divident_yield + self.yearly_contribution
+            value_for_compounding = future_value_array[i - 1] + additional_investment
+            future_value_array[i] = value_for_compounding * (1 + rate_array[i - 1])
+        self.future_value_array = future_value_array
+        return future_value_array
 
 
 
